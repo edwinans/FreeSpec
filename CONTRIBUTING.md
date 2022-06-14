@@ -53,7 +53,7 @@ line does not meet our requirements, since we introduce a new term
 80th column.
 
 ```coq
-(* good                                                                         |                   | *)
+(* bad                                                                          |                   | *)
   my_very_long_function_name (another_function x) (yet_another_function_even_longer y) z
 (*                                                                              |                   | *)
 ```

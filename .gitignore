@@ -1,6 +1,9 @@
-# Dune
+# dune
 _build/
 *.install
+
+# opam
+_opam/
 
 # Coq
 .*.aux
@@ -12,7 +15,7 @@ _build/
 *.vos
 .lia.cache
 
-# Ocaml
+# OCaml
 *.a
 *.cmxa
 *.cmxs
