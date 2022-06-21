@@ -76,7 +76,7 @@ Inductive guess_caller_obligation : guess_state -> forall (α : Type),
   
   (* write 'Won !' iff the target is guessed *)
   | write_msg (msg : string) (g : guess_state)
-              (H : g = Guessed <-> msg = "Won !")
+              (H : g = Guessed -> msg = "Won !")
     : guess_caller_obligation g unit (Write msg).
 
 Inductive no_callee_obligation (g : guess_state) (α : Type)
@@ -89,6 +89,8 @@ Definition guess_contract (target : nat) : contract CONSOLE guess_state :=
    ; callee_obligation := no_callee_obligation
   |}.
 
+(** * Proofs of guess_contract respectation by the program *)
+
 (* always allow retry (read_nat) *)
 Lemma allow_retry `{Provide ix CONSOLE} (g : guess_state) (u : unit)
   : forall t : nat, pre (to_hoare (guess_contract t) (read_nat u)) g.
@@ -98,13 +100,19 @@ Proof.
   constructor.
 Qed.
 
-Definition guess10 `{Provide ix CONSOLE} (target : nat)
+Definition guess_1 `{Provide ix CONSOLE} (target : nat)
   : impure ix unit :=
-  guess target 10.
+  guess target 1.
 
 Lemma write_won_if_guessed `{Provide ix CONSOLE} (g : guess_state) (u : unit)
-  : forall t : nat, pre (to_hoare (guess_contract t) (guess10 t)) g.
-Admitted.
+    (init : g = Retry)
+  : forall t : nat, pre (to_hoare (guess_contract t) (guess_1 t)) g.
+Proof.
+  intro t.
+  prove impure; repeat (ssubst; constructor);
+  try (unfold guess_update; rewrite equ_cond);
+  intro H1; now discriminate H1.
+Qed.
 
 (** * Aux functions to generate infinite flows *)
 CoFixpoint rep_inf {A : Type} (n:A) : Stream A := 
