@@ -75,8 +75,8 @@ Inductive guess_caller_obligation : guess_state -> forall (α : Type),
    : guess_caller_obligation g nat (ReadNat u)
   
   (* write 'Won !' iff the target is guessed *)
-  | write_msg (msg : string) (g : guess_state)
-              (H : g = Guessed -> msg = "Won !")
+  | write_won_iff_guessed (msg : string) (g : guess_state)
+              (H : g = Guessed <-> msg = "Won !")
     : guess_caller_obligation g unit (Write msg).
 
 Inductive no_callee_obligation (g : guess_state) (α : Type)
@@ -104,14 +104,15 @@ Definition guess_1 `{Provide ix CONSOLE} (target : nat)
   : impure ix unit :=
   guess target 1.
 
-Lemma write_won_if_guessed `{Provide ix CONSOLE} (g : guess_state) (u : unit)
+Lemma guess_respectful `{Provide ix CONSOLE} (g : guess_state) (u : unit)
     (init : g = Retry)
   : forall t : nat, pre (to_hoare (guess_contract t) (guess_1 t)) g.
 Proof.
   intro t.
   prove impure; repeat (ssubst; constructor);
   try (unfold guess_update; rewrite equ_cond);
-  intro H1; now discriminate H1.
+  try (intro H1; discriminate H1).
+  trivial.
 Qed.
 
 (** * Aux functions to generate infinite flows *)
