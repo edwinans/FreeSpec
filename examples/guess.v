@@ -18,11 +18,17 @@ Definition write `{Provide ix CONSOLE} (s : string) : impure ix unit :=
   request (Write s).
 
 (** * Definition of a semantic for the [CONSOLE] interface *)
-CoFixpoint console (in_flow : Stream nat) (out_flow : list string): semantics (CONSOLE) :=
-  mk_semantics (fun α (e : CONSOLE α) =>
-                  match e with
-                  | ReadNat _ => (Streams.hd in_flow, console (Streams.tl in_flow) out_flow)
-                  | Write s => (tt, console in_flow (s :: out_flow))
+CoFixpoint console (in_flow : Stream nat) (out_flow : list string)
+  : semantics (CONSOLE) :=
+  mk_semantics (fun α (c : CONSOLE α) =>
+                  match c with
+                  | ReadNat _ => (
+                      Streams.hd in_flow,
+                      console (Streams.tl in_flow) out_flow
+                    )
+                  | Write s => (
+                      tt, console in_flow (s :: out_flow)
+                    )
                   end).
 
 (** * The guess game loop logic *)                  
@@ -68,20 +74,16 @@ Definition guess_update (target : nat)
     if n =? target then Guessed else Retry 
   | _, _, _ => g end.
 
-Inductive guess_caller_obligation : guess_state -> forall (α : Type),
-  CONSOLE α -> Prop :=
+Inductive guess_caller_obligation : guess_state -> 
+    forall (α : Type), CONSOLE α -> Prop :=
   (* can always retry for now *)
   | retry (u : unit) (g : guess_state)
-   : guess_caller_obligation g nat (ReadNat u)
+    : guess_caller_obligation g nat (ReadNat u)
   
   (* write 'Won !' iff the target is guessed *)
   | write_won_iff_guessed (msg : string) (g : guess_state)
-              (H : g = Guessed <-> msg = "Won !")
+                          (H : g = Guessed <-> msg = "Won !")
     : guess_caller_obligation g unit (Write msg).
-
-Inductive no_callee_obligation (g : guess_state) (α : Type)
-  (c : CONSOLE α) (x : α) : Prop :=
-  | mk_no_callee_obligation : no_callee_obligation g α c x.
 
 Definition guess_contract (target : nat) : contract CONSOLE guess_state :=
   {| witness_update := guess_update target
@@ -100,19 +102,17 @@ Proof.
   constructor.
 Qed.
 
-Definition guess_1 `{Provide ix CONSOLE} (target : nat)
-  : impure ix unit :=
-  guess target 1.
-
 Lemma guess_respectful `{Provide ix CONSOLE} (g : guess_state) (u : unit)
-    (init : g = Retry)
-  : forall t : nat, pre (to_hoare (guess_contract t) (guess_1 t)) g.
+    (init : g = Retry) (max_attempt : nat)
+  : forall t : nat, pre (to_hoare (guess_contract t) (guess t max_attempt)) g.
 Proof.
   intro t.
-  prove impure; repeat (ssubst; constructor);
-  try (unfold guess_update; rewrite equ_cond);
-  try (intro H1; discriminate H1).
-  trivial.
+  induction max_attempt.
+  - prove impure. constructor. ssubst. split; now intro.
+  - prove impure;  
+    try (ssubst; constructor);
+    try (unfold guess_update; rewrite equ_cond);
+    ssubst; now trivial.
 Qed.
 
 (** * Aux functions to generate infinite flows *)
