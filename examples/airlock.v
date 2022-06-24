@@ -67,7 +67,7 @@ Definition controller `{Provide ix DOORS, Provide ix (STORE nat)}
       when (15 <? cpt) begin
         close_door left;;
         close_door right;;
-        put 0
+        put (cpt + 1)
       end
     | RequestOpen d =>
         close_door (co d);;
@@ -154,7 +154,7 @@ Inductive doors_o_callee : Ω -> forall (a : Type), DOORS a -> a -> Prop :=
 | doors_o_callee_is_open (d : door) (ω : Ω) (x : bool) (equ : sel d ω = x)
   : doors_o_callee ω bool (IsOpen d) x
 
-(** - There is no particular doors_o_calleeises on the result [x] of a request for [ω] to
+(** - There is no particular doors_o_callee(s) on the result [x] of a request for [ω] to
       close the door [d]. *)
 
 | doors_o_callee_toggle (d : door) (ω : Ω) (x : unit)
