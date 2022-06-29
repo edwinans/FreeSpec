@@ -125,7 +125,7 @@ CoFixpoint nat_inf (n:nat) : Stream nat :=
 (** * Execution examples *)
 Definition base_semantic := console (nat_inf 0) [].
 
-Compute (eval_effect base_semantic (ReadNat _)).
+(* Compute (eval_effect base_semantic (ReadNat _)).
 (* >> 0 *)
 
 Compute (exec_effect base_semantic (Write "hello world !")).
@@ -138,4 +138,4 @@ Compute (exec_impure (console (rep_inf 10) []) (guess 30 20)).
 (* >> out_flow: ["The target is greater";...] *)
 
 Compute (exec_impure (console (nat_inf 20) []) (guess 15 10)).
-(* >> out_flow: ["Game Over: max attempt limit exceeded";...] *)
+>> out_flow: ["Game Over: max attempt limit exceeded";...] *)

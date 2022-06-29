@@ -70,3 +70,5 @@ _build/default/theories/Exec/Exec.v
 _build/default/examples/airlock.v
 _build/default/examples/smram.v
 _build/default/examples/heap.v
+
+_build/default/examples/src/Console.v

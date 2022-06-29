@@ -1,0 +1,7 @@
+(library
+ (name console))
+
+(rule
+ (target Console.v)
+ (action
+  (run coqffi -finterface -ftransparent-types %{cmi:console} -o %{target})))
