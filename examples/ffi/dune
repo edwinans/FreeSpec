@@ -1,0 +1,10 @@
+(library
+ (name console))
+
+(coq.theory
+ (name FreeSpec.Example.ffi))
+
+(rule
+ (target Console.v)
+ (action
+  (run coqffi -finterface %{cmi:console} -o %{target})))

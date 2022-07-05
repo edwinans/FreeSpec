@@ -3,6 +3,11 @@
 -Q _build/default/theories/Core FreeSpec.Core
 -Q _build/default/theories/Exec FreeSpec.Exec
 -Q _build/default/theories/FFI FreeSpec.FFI
+
+-Q _build/default/examples/ffi FreeSpec.Example.ffi
+-Q _build/default/examples/bin FreeSpec.Example.bin
+-Q _build/default/examples/src FreeSpec.Example.Guess
+
 -arg -init-file
 -arg build.v
 
@@ -71,4 +76,7 @@ _build/default/examples/airlock.v
 _build/default/examples/smram.v
 _build/default/examples/heap.v
 
-_build/default/examples/src/Console.v
+_build/default/examples/guess.v
+_build/default/examples/src/guess.v
+_build/default/examples/ffi/Console.v
+_build/default/examples/bin/main.v
